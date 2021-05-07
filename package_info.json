@@ -1,0 +1,9 @@
+{
+  "name": "discordscraperCLI",
+  "version": "0.0.1",
+  "author": "Luke Sirand",
+  "author_email": "lsirand@ucsd.edu",
+  "descripton": "A command line interface tool that scrapes any discord channel.",
+  "url": "https://github.com/sirandluke/DiscordScraperCLI.git",
+  "python_requires": ">=3.6"
+}

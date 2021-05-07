@@ -1,0 +1,125 @@
+#! /usr/bin/env python3
+import click
+import csv
+import json
+import os
+import pandas as pd
+import random
+import requests
+import sys
+from datetime import date
+
+
+RED = '\033[91m'
+END = '\033[0m'
+colors = ['\033[94m', '\033[96m', '\033[92m']
+bad_ending = RED + "[Error]" + END + " Please verify your channel id/authorization is correct\nRefer to the documentation for finding Channel IDs and Authorizations\n(https://github.com/sirandluke/DiscordScraperCLI/blob/main/README.md)"
+
+
+@click.group('app', help='dsi - DiscordScraperCLI (https://github.com/sirandluke/DiscordScraperCLI)')
+def app():
+  pass
+
+
+@app.command('get_json', help='Save messages in a JSON file.')
+@click.option(
+  '-a', '--auth-token',
+  type=str, required=True,
+  help="Your discord account's authorization hashing"
+)
+@click.option(
+  '-c', '--channel-id',
+  type=str, required=True,
+  help="Channel ID of the channel to scrape" 
+)
+@click.option(
+  '-d', '--display',
+  is_flag=True,
+  help='Display the messages to console'
+)
+@click.option(
+  '-f', '--file-name',
+  required=False, default=None,
+  help="Name of the file to save to (omit file type)"
+)
+def get_json(auth_token, channel_id, display, file_name):
+  msgs = get_messages(auth_token, channel_id)
+  if msgs == None:
+    sys.exit(bad_ending)
+  msgs = json.loads(msgs)
+  if display:
+    disp_msgs(msgs)
+
+
+@app.command('get_csv', help='Save messages in a CSV file')
+@click.option(
+  '-a', '--auth-token',
+  type=str, required=True,
+  help="Your discord account's authorization hashing"
+)
+@click.option(
+  '-c', '--channel-id',
+  type=str, required=True,
+  help="Channel ID of the channel to scrape" 
+)
+@click.option(
+  '-d', '--display',
+  is_flag=True,
+  help='Display the messages to console'
+)
+@click.option(
+  '-f', '--file-name',
+  required=False, default=None,
+  help="Name of the file to save to (omit file type)"
+)
+def get_csv(auth_token, channel_id, display, file_name):
+  msgs = get_messages(auth_token, channel_id)
+  if msgs == None:
+    sys.exit(RED + bad_ending + END)
+  if display:
+    disp_msgs(msgs)
+  if file_name == None:
+    file_name = "{}-scrape-{}.csv".format(channel_id, date.today().strftime("%d/%m/%Y"))
+
+
+def get_messages(auth, channel_id):
+  headers = {
+    'authorization': auth
+  }
+  r = requests.get(f'https://discord.com/api/v8/channels/{channel_id}/messages', headers=headers)
+  if "Unauthorized" in r.text:
+    return None
+  return r.text
+
+
+def disp_msgs(msgs):
+  for msg in msgs:
+      print(f"timestamp: {msg['timestamp']} user: {msg['author']['username']}, content: {msg['content']}")
+
+
+def build_filename(name, is_json):
+  name = name.replace(' ', '')
+  name = name.replace('.json', '')
+  name = name.replace('.csv', '')
+  if is_json:
+    return name + '.json'
+  else:
+    return name + '.csv'
+
+
+# TODO: Figure out the path
+def json_to_csv(json_str, file_name):
+  df = pd.read_json(json_str)
+  df.to_csv(file_name)
+
+
+def rand_color():
+  return colors[random.randint(0, 2)]
+
+
+def main():
+  print(rand_color() + 'Welcome to DiscordScraperCLI!' + END + '\n')
+  app()
+
+if __name__ == "__main__":
+  main()
