@@ -19,6 +19,7 @@ A simple command line interface tool that scrapes messages from any discord chan
 - [Usage](#usage)
   - [Getting a Channel's ID](#getting-a-channels-id)
   - [Options](#options)
+- [Credits](#credits)
 
 ## Features
 
@@ -57,3 +58,9 @@ This command will install all the neccessary packages for DiscordScraperCLI to w
 ### Getting a Channel's ID
 
 ### Options
+
+## Credits
+
+DiscordScraperCLI by Luke Sirand [@ljsirand][@ljsirandhttps://twitter.com/sirandlj]
+
+Logo by Cole Grodnitzky
