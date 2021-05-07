@@ -5,6 +5,7 @@ import json
 import os
 import pandas as pd
 import random
+from pandas.core.frame import DataFrame
 import requests
 import sys
 from datetime import date
@@ -35,7 +36,7 @@ def app():
 @click.option(
   '-d', '--display',
   is_flag=True,
-  help='Display the messages to console'
+  help='Display the messages to console as a json string'
 )
 @click.option(
   '-f', '--file-name',
@@ -46,9 +47,9 @@ def get_json(auth_token, channel_id, display, file_name):
   msgs = get_messages(auth_token, channel_id)
   if msgs == None:
     sys.exit(bad_ending)
-  msgs = json.loads(msgs)
   if display:
     disp_msgs(msgs)
+  file_name = build_filename(file_name,channel_id, is_json=True)
 
 
 @app.command('get_csv', help='Save messages in a CSV file')
@@ -65,7 +66,7 @@ def get_json(auth_token, channel_id, display, file_name):
 @click.option(
   '-d', '--display',
   is_flag=True,
-  help='Display the messages to console'
+  help='Display the messages to console as a json string'
 )
 @click.option(
   '-f', '--file-name',
@@ -78,11 +79,13 @@ def get_csv(auth_token, channel_id, display, file_name):
     sys.exit(RED + bad_ending + END)
   if display:
     disp_msgs(msgs)
-  if file_name == None:
-    file_name = "{}-scrape-{}.csv".format(channel_id, date.today().strftime("%d/%m/%Y"))
+  write_csv(
+    msgs,
+    file_name= build_filename(file_name,channel_id, is_json=False)
+  )
 
 
-def get_messages(auth, channel_id):
+def get_messages(auth, channel_id) -> str:
   headers = {
     'authorization': auth
   }
@@ -92,12 +95,15 @@ def get_messages(auth, channel_id):
   return r.text
 
 
-def disp_msgs(msgs):
-  for msg in msgs:
+def disp_msgs(msgs) -> None:
+  json_msgs = json.loads(msgs)
+  for msg in json_msgs:
       print(f"timestamp: {msg['timestamp']} user: {msg['author']['username']}, content: {msg['content']}")
 
 
-def build_filename(name, is_json):
+def build_filename(name, channel_id, is_json) -> str:
+  if name == None:
+    return "{}-scrape-{}.csv".format(channel_id, date.today().strftime("%d/%m/%Y"))
   name = name.replace(' ', '')
   name = name.replace('.json', '')
   name = name.replace('.csv', '')
@@ -108,12 +114,19 @@ def build_filename(name, is_json):
 
 
 # TODO: Figure out the path
-def json_to_csv(json_str, file_name):
+def write_csv(json_str, file_name) -> None:
   df = pd.read_json(json_str)
-  df.to_csv(file_name)
+  df.to_csv(file_name, encoding='utf-8', index=False)
 
 
-def rand_color():
+# TODO: Figure out the path
+def write_json(json_str, file_name) -> None:
+  jsonFile = open(file_name, "w")
+  jsonFile.write(json_str)
+  jsonFile.close()
+
+
+def rand_color() -> str:
   return colors[random.randint(0, 2)]
 
 

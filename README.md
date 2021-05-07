@@ -14,10 +14,11 @@ A simple command line interface tool that scrapes messages from any discord chan
 - [Features](#features)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
-  - [Installing using pip](#installing-using-pip)
-  - [Installing the project directly](#installing-the-project-directly)
+  - [Installing Using pip](#installing-using-pip)
+  - [Installing the Project Directly](#installing-the-project-directly)
 - [Usage](#usage)
   - [Getting a Channel's ID](#getting-a-channels-id)
+  - [Getting Authorization Tokens](#getting-authorization-tokens)
   - [Options](#options)
 - [Credits](#credits)
 
@@ -37,11 +38,11 @@ If you don't have Python or need to update to a newer version, [check out this l
 
 Next, ensure that `pip` is installed as well (newer version of Python should come with pip preinstalled). If you're unsure if your device has pip, [check out this link](https://pip.pypa.io/en/stable/installing/)!
 
-### Installing using pip
+### Installing Using pip
 
 Coming soon... 8)
 
-### Installing the project directly
+### Installing the Project Directly
 
 After downloading the project, navigate to `/DiscordScraperCLI` directory in your terminal.
 
@@ -56,6 +57,8 @@ This command will install all the neccessary packages for DiscordScraperCLI to w
 ## Usage
 
 ### Getting a Channel's ID
+
+### Getting Authorization Tokens
 
 ### Options
 
