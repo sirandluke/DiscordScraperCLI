@@ -61,6 +61,6 @@ This command will install all the neccessary packages for DiscordScraperCLI to w
 
 ## Credits
 
-DiscordScraperCLI by Luke Sirand [@ljsirand](https://twitter.com/sirandlj)
+DiscordScraperCLI by Luke Sirand [(@ljsirand)](https://twitter.com/sirandlj)
 
 Logo by Cole Grodnitzky
