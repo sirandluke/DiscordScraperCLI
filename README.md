@@ -4,8 +4,6 @@
 
 <h1 align="center"> DiscordScraperCLI</h1>
 
-<hr>
-
 A simple command line interface tool that scrapes messages from any discord channel.
 
 <hr>
