@@ -6,12 +6,7 @@
 
 <p align="center">A simple command line interface tool that scrapes messages from any discord channel.<p>
 
-<hr display="block"
-    unicode-bidi="isolate";
-    margin-block-start="0.5em"
-    margin-block-end="0.5em"
-    margin-inline-start="auto"
-    margin-inline-end="auto">
+<hr>
 
 ## Table of Contents
 
