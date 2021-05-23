@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="/Images/dsi.png" alt="dsi-logo" width="150px"/>
+  <img src="/Images/dsi.png" alt="dsi-logo" width="250px"/>
 </div>
 
 <h1 align="center"> DiscordScraperCLI</h1>
