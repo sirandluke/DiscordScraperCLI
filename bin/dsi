@@ -9,6 +9,7 @@ from pandas.core.frame import DataFrame
 import requests
 import sys
 from datetime import date
+from find_download import get_download_path
 
 
 RED = '\033[91m'
@@ -22,7 +23,7 @@ def app():
   pass
 
 
-@app.command('get_json', help='Save messages in a JSON file.')
+@app.command('get_json', help='Save messages to a JSON file in user\'s download folder.')
 @click.option(
   '-a', '--auth-token',
   type=str, required=True,
@@ -36,23 +37,35 @@ def app():
 @click.option(
   '-d', '--display',
   is_flag=True,
-  help='Display the messages to console as a json string'
+  help='Display the messages to console'
 )
 @click.option(
   '-f', '--file-name',
   required=False, default=None,
   help="Name of the file to save to (omit file type)"
 )
-def get_json(auth_token, channel_id, display, file_name):
+def get_json(auth_token:str, channel_id:str, display:bool, file_name:str, path=get_download_path()):
+  """Save messages to a JSON file in user's download folder.
+  Args:
+      auth_token (str): Authorization token of Discord user.
+      channel_id (str): Discord channel ID.
+      display (bool): Displays the messages to console.
+      file_name (str): Name of file to save to.
+      path (str): Gets the users download folder.
+  """
   msgs = get_messages(auth_token, channel_id)
   if msgs == None:
     sys.exit(bad_ending)
   if display:
     disp_msgs(msgs)
-  file_name = build_filename(file_name,channel_id, is_json=True)
+  write_json(
+    msgs,
+    path,
+    file_name = build_filename(path, file_name,channel_id, is_json=True)
+  )
 
 
-@app.command('get_csv', help='Save messages in a CSV file')
+@app.command('get_csv', help='Save messages to a CSV file to user\'s download folder.')
 @click.option(
   '-a', '--auth-token',
   type=str, required=True,
@@ -66,14 +79,23 @@ def get_json(auth_token, channel_id, display, file_name):
 @click.option(
   '-d', '--display',
   is_flag=True,
-  help='Display the messages to console as a json string'
+  help='Display the messages to console'
 )
 @click.option(
   '-f', '--file-name',
   required=False, default=None,
   help="Name of the file to save to (omit file type)"
 )
-def get_csv(auth_token, channel_id, display, file_name):
+def get_csv(auth_token:str, channel_id:str, display:str, file_name:str, path=get_download_path()):
+  """Save messages to a CSV file to user's download folder.
+
+  Args:
+      auth_token (str): Authorization token of Discord user.
+      channel_id (str): Discord channel ID.
+      display (bool): Displays the messages to console.
+      file_name (str): Name of file to save to.
+      path (str): Gets the users download folder.
+  """
   msgs = get_messages(auth_token, channel_id)
   if msgs == None:
     sys.exit(RED + bad_ending + END)
@@ -81,11 +103,22 @@ def get_csv(auth_token, channel_id, display, file_name):
     disp_msgs(msgs)
   write_csv(
     msgs,
-    file_name= build_filename(file_name,channel_id, is_json=False)
+    path,
+    file_name=build_filename(path, file_name, channel_id, is_json=False)
   )
 
 
-def get_messages(auth, channel_id) -> str:
+def get_messages(auth:str, channel_id:str) -> str:
+  """Sends request to Discord API to recieve messages from specified
+     channel.
+
+  Args:
+      auth (str): User's auth token.
+      channel_id (str): Channel to be scrapped.
+
+  Returns:
+      str: JSON string of Discord messages.
+  """
   headers = {
     'authorization': auth
   }
@@ -95,38 +128,62 @@ def get_messages(auth, channel_id) -> str:
   return r.text
 
 
-def disp_msgs(msgs) -> None:
-  json_msgs = json.loads(msgs)
+def disp_msgs(msgs:str) -> None:
+  """Displays Messages to console.
+
+  Args:
+      msgs (str): Messages as JSON string.
+  """
+  json_msgs = reversed(json.loads(msgs))
   for msg in json_msgs:
       print(f"timestamp: {msg['timestamp']} user: {msg['author']['username']}, content: {msg['content']}")
 
 
-def build_filename(name, channel_id, is_json) -> str:
+def build_filename(path:str, name:str, channel_id:str, is_json:bool) -> str:
+  """Generate file path/to/file/in/downloads.
+    Either geneates file with name passed in by user or formats it as:
+    `{channel-id}-scrape-{DD/MM/YY}
+
+  Args:
+      path (str): Path to user's downloads folder
+      name (str): Name of the file
+      channel_id (str): Channel ID used in name if 
+      is_json (bool): Determnes if JSON or CSV.
+
+  Returns:
+      str: path/to/downloads + filename
+  """
   if name == None:
     return "{}-scrape-{}.csv".format(channel_id, date.today().strftime("%d/%m/%Y"))
   name = name.replace(' ', '')
   name = name.replace('.json', '')
   name = name.replace('.csv', '')
   if is_json:
-    return name + '.json'
+    return path + '/' + name + '.json'
   else:
-    return name + '.csv'
+    return path + '/' + name + '.csv'
 
 
 # TODO: Figure out the path
-def write_csv(json_str, file_name) -> None:
+def write_csv(json_str, path, file_name) -> None:
   df = pd.read_json(json_str)
-  df.to_csv(file_name, encoding='utf-8', index=False)
+  df.to_csv(os.join(path, file_name), encoding='utf-8', index=False)
+
 
 
 # TODO: Figure out the path
-def write_json(json_str, file_name) -> None:
-  jsonFile = open(file_name, "w")
+def write_json(json_str, path, file_name) -> None:
+  jsonFile = open(os.join(path, file_name), "w")
   jsonFile.write(json_str)
   jsonFile.close()
 
 
 def rand_color() -> str:
+  """Gives random color to Start of script.
+
+  Returns:
+      str: Color code from `colors[]`.
+  """
   return colors[random.randint(0, 2)]
 
 
