@@ -37,7 +37,7 @@ Prints the messages from the discord channel with ID `10083930` to console:
 {
   "this": "is",
   "some": "random",
-  "ass": "JSON",
+  "blah": "JSON",
   "for": "now..."
 }
 ```
@@ -101,7 +101,7 @@ This command will install all the neccessary packages for DiscordScraperCLI to w
 
 ### Getting Authorization Tokens
 
-  Follow the steps 1-4 as outlined in  outlined in [Getting a Channel's ID](#getting-a-channels-id). Now, scroll down to the `Request Headers` section. You will see a sub header called `:authorization:`. Copy the value and you are now ready to being able to scrape some messages!
+  Follow the steps 1-4 as outlined in  outlined in [Getting a Channel's ID](#getting-a-channels-id). Now, scroll down to the `Request Headers` section. You will see a sub header called `:authorization:`. Copy the value and you are now ready to scrape some messages!
 
 ![chrome auth tokens](Images/chrome-auth-tokens.png)
 
